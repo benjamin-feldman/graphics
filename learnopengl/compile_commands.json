@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/Users/bf/Code/graphics/learnopengl",
+    "command": "clang++ main.cpp src/glad.c -Iinclude -I/opt/homebrew/include -std=c++17",
+    "file": "main.cpp"
+  },
+  {
+    "directory": "/Users/bf/Code/graphics/learnopengl",
+    "command": "clang++ src/glad.c -Iinclude -I/opt/homebrew/include -std=c++17",
+    "file": "src/glad.c"
+  }
+]
