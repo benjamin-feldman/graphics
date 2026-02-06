@@ -1,0 +1,16 @@
+build/
+cmake-build-*/
+out/
+.cache
+
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+app
+*.exe
+*.out
+
+.DS_Store
