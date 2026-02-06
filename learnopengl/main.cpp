@@ -115,7 +115,6 @@ int main() {
     // into the screen-space coordinates.
     // NB: interesting that this is a contiguous array of floating point numbers (with a "stride" of 3, i.e. a group of 3 floats
     //  corresponds to a single point), and not an array of tuple/vec3
-    float theta = 0.5f;
     float vertices[] = {
         // original triangle
         -0.5f, -0.5f, 0.0f,
