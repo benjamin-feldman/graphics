@@ -20,16 +20,20 @@ const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "layout (location = 1) in vec3 aColor;\n"
     "out vec3 ourColor;\n"
+    "out vec3 pos;\n"
+    "uniform float xOffset;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = vec4(aPos.x+xOffset, aPos.y, aPos.z, 1.0);\n"
     "   ourColor = aColor;\n"
+    "   pos = aPos;\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "in vec3 ourColor;\n"
-    "void main(){ FragColor = vec4(ourColor, 1.0);}";
+    "in vec3 pos;\n"
+    "void main(){ FragColor = vec4(pos, 1.0);}";
 
 int main() {
     // boilerplate initialization for GLFW
@@ -182,7 +186,15 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        float xOffset = i;
+        int vertexXOffsetLocation = glGetUniformLocation(shaderProgram, "xOffset");
+
         glUseProgram(shaderProgram);
+
+        glUniform1f(vertexXOffsetLocation, xOffset);
+
+        i += .01f;
+        i = i > 1.0f ? 0.0f : i;
 
         glBindVertexArray(VAO);
         // We use the GL_TRIANGLES primitive. It tells OpenGL that each group of 3 vertices form an independent
