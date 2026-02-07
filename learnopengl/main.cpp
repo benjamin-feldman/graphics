@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "shader.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height){
     glViewport(0, 0, width, height);
@@ -14,26 +15,6 @@ void processInput(GLFWwindow *window){
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-// shader sources
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 ourColor;\n"
-    "out vec3 pos;\n"
-    "uniform float xOffset;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x+xOffset, aPos.y, aPos.z, 1.0);\n"
-    "   ourColor = aColor;\n"
-    "   pos = aPos;\n"
-    "}\0";
-
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in vec3 ourColor;\n"
-    "in vec3 pos;\n"
-    "void main(){ FragColor = vec4(pos, 1.0);}";
 
 int main() {
     // boilerplate initialization for GLFW
@@ -60,53 +41,8 @@ int main() {
         return -1;
     }
 
-    // SHADER COMPILATION
-    // we store the vertex shader ID and create it using glad
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    // Bind the shader source to the OpenGL shader
-    // Second arg is how many strings we are passing
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Check that the shader source compiles properly
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // Similar for the fragment shaders
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::ORANGE_FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // Create the shader program, that will be used when rendering objects
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    // Attach then link the above compiled shaders to the shaderProgram`
-    // glAttachShader adds compiled shader stages to a program, while glLinkProgram validates
-    // and combines all attached stages into one runnable GPU program.
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::ORANGE_PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // Shaders
+    Shader ourShader("shaders/shader.vert", "shaders/shader.frag");
 
     // VERTEX DATA AND BUFFERS
     // All vertices must live in [-1, 1]^3, aka Normalized Device Coordinates (NDC). The viewport will later transform those
@@ -187,11 +123,9 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         float xOffset = i;
-        int vertexXOffsetLocation = glGetUniformLocation(shaderProgram, "xOffset");
 
-        glUseProgram(shaderProgram);
-
-        glUniform1f(vertexXOffsetLocation, xOffset);
+        ourShader.use();
+        ourShader.setFloat("xOffset", xOffset);
 
         i += .01f;
         i = i > 1.0f ? 0.0f : i;
@@ -211,7 +145,6 @@ int main() {
     // optional: de-allocate all resources once they've outlived their purpose
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
 
     glfwTerminate();
 

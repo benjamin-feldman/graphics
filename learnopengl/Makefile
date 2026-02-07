@@ -20,7 +20,7 @@ all: $(OUT)
 $(OUT): $(OBJ)
 	@$(CXX) $(OBJ) $(LDFLAGS) -o $(OUT)
 
-main.o: main.cpp
+main.o: main.cpp include/shader.h
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 glad.o: src/glad.c
