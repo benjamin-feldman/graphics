@@ -10,7 +10,7 @@ LDFLAGS  := -L/opt/homebrew/lib -lglfw \
             -framework IOKit \
             -framework CoreVideo
 
-OBJ := main.o glad.o
+OBJ := main.o glad.o stb_image.o
 OUT := app
 
 .PHONY: all run clean
@@ -20,11 +20,14 @@ all: $(OUT)
 $(OUT): $(OBJ)
 	@$(CXX) $(OBJ) $(LDFLAGS) -o $(OUT)
 
-main.o: main.cpp include/shader.h
+main.o: main.cpp
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 glad.o: src/glad.c
 	@$(CC) $(CFLAGS) -c $< -o $@
+
+stb_image.o: src/stb_image.cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 run: all
 	@./$(OUT)
