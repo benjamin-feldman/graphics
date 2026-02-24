@@ -18,8 +18,15 @@ public:
     float mouseSensitivity;
 
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f))
-        : position(position), front(glm::vec3(0.0f, 0.0f, -1.0f)), up(glm::vec3(0.0f, 1.0f, 0.0f)),
-          yaw(-90.0f), pitch(0.0f), fov(45.0f), movementSpeed(2.5f), mouseSensitivity(0.1f) {}
+        : position(position),
+          front(glm::vec3(0.0f, 0.0f, -1.0f)),
+          up(glm::vec3(0.0f, 1.0f, 0.0f)),
+          yaw(-90.0f),
+          pitch(0.0f),
+          fov(45.0f),
+          movementSpeed(2.5f),
+          mouseSensitivity(0.1f)
+    {}
 
     glm::mat4 GetViewMatrix() {
         return glm::lookAt(position, position + front, up);
