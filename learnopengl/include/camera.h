@@ -1,8 +1,13 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/vector_float3.hpp"
+#include "glm/geometric.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/matrix.hpp"
+#include <iostream>
 
 class Camera {
 public:
@@ -29,7 +34,25 @@ public:
     {}
 
     glm::mat4 GetViewMatrix() {
-        return glm::lookAt(position, position + front, up);
+        // return glm::lookAt(position, position + front, up);
+        // Custom (inefficient) implementation of the lookAt method
+        glm::vec3 direction = front;
+        glm::vec3 cameraZ = - glm::normalize(direction);
+        glm::vec3 cameraX = glm::normalize(glm::cross(up, cameraZ));
+        glm::vec3 cameraY = glm::normalize(glm::cross(cameraZ, cameraX));
+
+        glm::mat4 rotationCameraToWorld = glm::mat4(
+            glm::vec4(cameraX, 0.0f),
+            glm::vec4(cameraY, 0.0f),
+            glm::vec4(cameraZ, 0.0f),
+            glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+        );
+
+        glm::mat4 lookAtRotation = glm::transpose(rotationCameraToWorld);
+        glm::mat4 lookAtTranslation = glm::mat4(1.0f);
+        lookAtTranslation[3] = glm::vec4(-position.x, -position.y, -position.z, 1.0f);
+
+        return lookAtRotation * lookAtTranslation;
     }
 
     void ProcessKeyboard(int direction, float deltaTime) {
